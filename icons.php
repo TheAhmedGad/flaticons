@@ -1,5 +1,7 @@
 <?php 
 session_start();
+require "PHPHtmlParser/vendor/autoload.php"; // including Autoload files 
+use PHPHtmlParser\Dom; // Importing Dom Parser
 ?>
 <!-- Latest compiled and minified CSS & JS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -22,41 +24,36 @@ session_start();
 	<a href="index.php" class="btn btn-success">Home</a>
 	<a href="files.php" class="btn btn-success">Local Files</a>
 	</div>
-	<?php if(@$_SESSION['message'] != ''):?>
+	<?php if(@$_SESSION['message'] != ''): // check for success message?>
 		<div class="container">
-			<div class="alert alert-success"><?=$_SESSION['message']?></div>
+			<div class="alert alert-success"><?=$_SESSION['message'] //show success message ?></div> 
 		</div>
-	<?php $_SESSION['message']=''; ?>
+	<?php $_SESSION['message']=''; //clear session of message after viewing it?>
 	<?php endif?>
 	<div class="row">	
 	<?php
-		require "PHPHtmlParser/vendor/autoload.php";
-		use PHPHtmlParser\Dom;
-		$currentPage = ($_GET['page'])?$_GET['page']:1;
-		$keyword 	 = $_GET['keyword'];
-		$dom 		 = new Dom;
-		$dom->load('https://www.flaticon.com/search/'.$currentPage.'?word='.$keyword);
-		$contents 	= $dom->find('li.icon');
+		$currentPage = ($_GET['page'])?$_GET['page']:1; 
+		$keyword 	 = $_GET['keyword']; //KeyWord To Search in Flat Icon
+		$dom 		 = new Dom; // Call Dom Class
+		$dom->load('https://www.flaticon.com/search/'.$currentPage.'?word='.$keyword); // load remote url
+		$contents 	= $dom->find('li.icon'); // Search in page Source
 		foreach ($contents as $content)
 		{
-			$innerDom = new Dom;
-			$innerDom->load($content->outerHtml);
-			$img = $innerDom->getElementsbyTag('img');
-			
-			echo'
-					<div class="col-md-1">
-						<div class="thumbnail">
-							<a href="grap.php?image='.$img->getAttribute('src').'&page='.$currentPage.'&back='.$keyword.'">
-								'.$img->outerHtml.'
-							</a>
-						</div>
+			$innerDom = new Dom;  // Call Dom Class again for inner image in Li
+			$innerDom->load($content->outerHtml); // load Li html code
+			$img = $innerDom->getElementsbyTag('img'); //search in li code for image tag
+			echo'<div class="col-md-1">
+					<div class="thumbnail">
+						<a href="grap.php?image='.$img->getAttribute('src').'&page='.$currentPage.'&back='.$keyword.'">
+							'.$img->outerHtml.'
+						</a>
 					</div>
-				';
+				 </div>'; //get img tag attr with some other options
 		}
-		$pagesCount 	= $dom->find('span#pagination-total')[0];
-		$pagesCount 	= $pagesCount->text;
-		$nextPage		= ($currentPage+1 > $pagesCount)?$pagesCount:$currentPage+1;
-		$previousPage	= ($currentPage-1 == 0)?1:$currentPage-1;
+		$pagesCount 	= $dom->find('span#pagination-total')[0]; //pages count element for pagination 
+		$pagesCount 	= $pagesCount->text; // the inner text for pages count
+		$nextPage		= ($currentPage+1 > $pagesCount)?$pagesCount:$currentPage+1; //next page number
+		$previousPage	= ($currentPage-1 == 0)?1:$currentPage-1; // pervious page number
 	?>
 		
 	</div>
