@@ -37,22 +37,22 @@ session_start();
 		$dom 		 = new Dom;
 		$dom->load('https://www.flaticon.com/search/'.$currentPage.'?word='.$keyword);
 		$contents 	= $dom->find('li.icon');
-				foreach ($contents as $content)
-				{
-					$innerDom = new Dom;
-					$innerDom->load($content->outerHtml);
-					$img = $innerDom->getElementsbyTag('img');
-					
-					echo'
-							<div class="col-md-1">
-								<div class="thumbnail">
-									<a href="grap.php?image='.$img->getAttribute('src').'&page='.$currentPage.'&back='.$keyword.'">
-										'.$img->outerHtml.'
-									</a>
-								</div>
-							</div>
-						';
-				}
+		foreach ($contents as $content)
+		{
+			$innerDom = new Dom;
+			$innerDom->load($content->outerHtml);
+			$img = $innerDom->getElementsbyTag('img');
+			
+			echo'
+					<div class="col-md-1">
+						<div class="thumbnail">
+							<a href="grap.php?image='.$img->getAttribute('src').'&page='.$currentPage.'&back='.$keyword.'">
+								'.$img->outerHtml.'
+							</a>
+						</div>
+					</div>
+				';
+		}
 		$pagesCount 	= $dom->find('span#pagination-total')[0];
 		$pagesCount 	= $pagesCount->text;
 		$nextPage		= ($currentPage+1 > $pagesCount)?$pagesCount:$currentPage+1;
